@@ -103,6 +103,7 @@ class Order(behaviours.Timestampable, behaviours.Activable, models.Model):
             try:
                 current_balance = self.user.user_balances.filter(currency=self_currency).first().balance
             except AttributeError:
+                import pdb; pdb.set_trace()
                 raise Exception("There's no UserBalance object created for that currency")
 
             filter_obj = {
