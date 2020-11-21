@@ -1,12 +1,18 @@
 from rest_framework import serializers
 
-from .models import Currency, Order, Trade, UserBalance
+from .models import Currency, CurrencyPair, Order, Trade, UserBalance
 
 
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
-        fields = ['name', 'verbose_name', 'acronym', 'currency_type']
+        exclude = []
+
+
+class CurrencyPairSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CurrencyPair
+        exclude = []
 
 
 # class User(AbstractUser):
@@ -16,16 +22,16 @@ class CurrencySerializer(serializers.ModelSerializer):
 class UserBalanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBalance
-        fields = ['user', 'currency', 'balance']
+        exclude = []
 
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['user', 'origin_currency', 'destination_currency', 'order_type', 'price']
+        exclude = ['modified_date']
 
 
 class TradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trade
-        fields = ['buyer_order', 'seller_order']
+        exclude = ['modified_date']

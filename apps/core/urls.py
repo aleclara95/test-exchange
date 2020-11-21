@@ -7,6 +7,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register(r'currency', views.CurrencyViewSet)
+router.register(r'currency_pair', views.CurrencyPairViewSet)
 router.register(r'user_balance', views.UserBalanceViewSet)
 router.register(r'order', views.OrderViewSet)
 router.register(r'trade', views.TradeViewSet)

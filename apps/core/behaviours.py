@@ -13,3 +13,10 @@ class Timestampable(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Activable(models.Model):
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        abstract = True
