@@ -13,9 +13,9 @@ CURRENCY_TYPES = [
 
 
 class Currency(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
     verbose_name = models.CharField(max_length=64)
-    acronym = models.CharField(max_length=8)
+    acronym = models.CharField(max_length=8, unique=True)
     currency_type = models.CharField(max_length=16, choices=CURRENCY_TYPES)
 
     def __str__(self):
@@ -192,11 +192,13 @@ class Order(behaviours.Timestampable, behaviours.Activable, models.Model):
                 matching_order_destination_balance.save()
 
                 # Save orders
-                super(Order, self).save(*args, **kwargs)
+                self.save()
                 matching_order.save()
 
                 # Create trade
-                Trade.objects.create(buyer_order=buyer_order, seller_order=seller_order)
+                price = min([self.price, matching_order.price])
+                Trade.objects.create(buyer_order=buyer_order, seller_order=seller_order,
+                                     amount=amount, price=price)
         else:
             super(Order, self).save(*args, **kwargs)
 
@@ -205,9 +207,10 @@ class Trade(behaviours.Timestampable, behaviours.Activable, models.Model):
     buyer_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='buyer_trades')
     seller_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='seller_trades')
 
+    price = models.DecimalField(max_digits=64, decimal_places=settings.MAX_DECIMAL_PLACES)
+    amount = models.DecimalField(max_digits=64, decimal_places=settings.MAX_DECIMAL_PLACES)
+
     def __str__(self):
-        origin_currency = self.seller_order.currency_pair.origin
-        destination_currency = self.seller_order.currency_pair.destination
         return f"""[{self.seller_order.currency_pair}] {self.seller_order.user}
                    -> {self.buyer_order.user}
                    | {self.create_date.strftime(settings.DEFAULT_DATETIME_FORMAT)}"""
